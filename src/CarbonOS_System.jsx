@@ -33,20 +33,21 @@ import {
 // --- 1. CONSTANTS & FACTORS ---
 
 const COMMUTE_MODES = [
-    { id: 'car', label: 'Car (Gas)', factor: 0.17, icon: Car, color: 'text-rose-500', bg: 'bg-rose-50' },
-    { id: 'ev', label: 'Car (EV)', factor: 0.05, icon: Car, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    { id: 'subway', label: 'Subway', factor: 0.03, icon: Train, color: 'text-indigo-500', bg: 'bg-indigo-50' },
-    { id: 'bus', label: 'Bus', factor: 0.06, icon: Bus, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { id: 'car', label: 'Car (Petrol)', factor: 0.19, icon: Car, color: 'text-rose-500', bg: 'bg-rose-50' },
+    { id: 'ev', label: 'Car (EV)', factor: 0.07, icon: Car, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { id: 'metro', label: 'Metro', factor: 0.04, icon: Train, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+    { id: 'bus', label: 'Bus', factor: 0.08, icon: Bus, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { id: 'auto', label: 'Auto-rickshaw', factor: 0.12, icon: Car, color: 'text-orange-500', bg: 'bg-orange-50' },
     { id: 'bike', label: 'Bike/Walk', factor: 0.0, icon: Bike, color: 'text-sky-500', bg: 'bg-sky-50' }
 ];
 
 const DEPARTMENTS = ['Engineering', 'Sales', 'Marketing', 'HR'];
 
-// Scope 3 Factors
+// Scope 3 Factors (Adjusted for Indian context)
 const FACTORS = {
-    cloudCpu: 0.02, // kg CO2e per vCPU hour
-    cloudStorage: 0.005, // kg CO2e per GB/month
-    serverEmbodied: 80, // kg CO2e amortized monthly per server unit
+    cloudCpu: 0.025, // kg CO2e per vCPU hour (higher due to India's grid intensity)
+    cloudStorage: 0.006, // kg CO2e per GB/month
+    serverEmbodied: 85, // kg CO2e amortized monthly per server unit
 };
 
 // --- 2. MOCK DATA GENERATOR ---
@@ -137,7 +138,7 @@ const LandingPage = ({ onNavigate }) => (
 const EmployeePage = ({ onLogData, onNavigate }) => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
-        mode: 'subway',
+        mode: 'metro',
         distance: 12.5,
         hours: 8,
         locationType: 'home', // 'home' or 'custom'
@@ -146,9 +147,9 @@ const EmployeePage = ({ onLogData, onNavigate }) => {
     const [isCalculating, setIsCalculating] = useState(false);
     const [sessionImpact, setSessionImpact] = useState(0); // Stores the result for success screen
 
-    // Mock Addresses
-    const HOME_ADDRESS = "123 Maple Avenue, Apt 4B";
-    const OFFICE_ADDRESS = "GreenBit HQ, Tech Park";
+    // Mock Addresses (Indian locations)
+    const HOME_ADDRESS = "Flat 4B, Prestige Apartments, Koramangala";
+    const OFFICE_ADDRESS = "GreenBit HQ, Manyata Tech Park, Bengaluru";
 
     const handleLocationChange = (type) => {
         setFormData(prev => ({ ...prev, locationType: type }));
@@ -464,7 +465,7 @@ const AdminPage = ({ employees, inputs, setInputs, onNavigate }) => {
                 <div className="p-6 h-full overflow-y-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                            <Settings className="w-5 h-5 text-indigo-400" /> Data Sources
+                            <Settings className="w-5 h-5 text-indigo-400" /> Configure Data
                         </h2>
                         <button onClick={() => setShowSettings(false)} className="text-slate-400 hover:text-white p-2 hover:bg-slate-800 rounded-full transition-colors">
                             <X className="w-6 h-6" />
@@ -498,7 +499,7 @@ const AdminPage = ({ employees, inputs, setInputs, onNavigate }) => {
                                         onChange={(e) => setInputs({ ...inputs, gridFactor: Math.max(0, Number(e.target.value)) })}
                                         className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                                     />
-                                    <p className="text-xs text-slate-500 mt-2 flex items-center gap-1"><Info className="w-3 h-3" /> Default: 0.45 (Avg Grid Intensity)</p>
+                                    <p className="text-xs text-slate-500 mt-2 flex items-center gap-1"><Info className="w-3 h-3" /> Default: 0.82 (India Grid Intensity)</p>
                                 </div>
                                 <div className="pt-3 mt-2 border-t border-slate-800 flex justify-between text-sm">
                                     <span className="text-slate-400">Calculated Scope 2:</span>
@@ -556,7 +557,7 @@ const AdminPage = ({ employees, inputs, setInputs, onNavigate }) => {
                                         onChange={(e) => setInputs({ ...inputs, serverCount: Math.max(0, Number(e.target.value)) })}
                                         className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 font-mono"
                                     />
-                                    <p className="text-xs text-slate-500 mt-2">Est. 80kg monthly embodied carbon/unit</p>
+                                    <p className="text-xs text-slate-500 mt-2">Est. 85kg monthly embodied carbon/unit</p>
                                 </div>
                                 <div className="pt-3 mt-2 border-t border-slate-800 flex justify-between text-sm">
                                     <span className="text-slate-400">Calculated Scope 3:</span>
@@ -580,7 +581,7 @@ const AdminPage = ({ employees, inputs, setInputs, onNavigate }) => {
                 </div>
                 <div className="flex gap-4 items-center">
                     <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-sm font-medium transition-all border border-slate-700 hover:border-slate-600">
-                        <Settings className="w-4 h-4" /> Data Sources
+                        <Settings className="w-4 h-4" /> Configure Data
                     </button>
                     <button onClick={() => onNavigate('employee')} className="text-sm font-medium text-slate-500 hover:text-indigo-400 transition-colors px-3 py-2">
                         Switch View
@@ -729,13 +730,13 @@ export default function GreenBit() {
     const [view, setView] = useState('landing'); // landing, employee, admin
     const [employees, setEmployees] = useState([]);
 
-    // Central Input State for Admin Config
+    // Central Input State for Admin Config (Indian defaults)
     const [inputs, setInputs] = useState({
-        electricityKwh: 12500,
-        gridFactor: 0.45,
-        cloudCpuHours: 5000,
-        cloudStorageGb: 2000,
-        serverCount: 8
+        electricityKwh: 15000, // Higher consumption typical in Indian offices
+        gridFactor: 0.82, // India's grid emission factor (kg CO2e/kWh)
+        cloudCpuHours: 4500,
+        cloudStorageGb: 1800,
+        serverCount: 6
     });
 
     // Initialize data once
